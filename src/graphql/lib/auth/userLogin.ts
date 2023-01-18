@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { useAuthenticateMutation } from "../../generated";
 import generateChallenge from "./generateChallenge";
@@ -9,6 +9,8 @@ export default function useLogin() {
 
     const sdk = useSDK();
     const { mutateAsync: sendSignedMessage } = useAuthenticateMutation();
+
+    const client = useQueryClient();
 
     async function login() {
         if(!address) return;
@@ -28,6 +30,8 @@ export default function useLogin() {
         const { accessToken, refreshToken } = authenticate;
 
         setAccessToken(accessToken, refreshToken);
+
+        client.invalidateQueries(["lens-user", address]);
     }
     return useMutation(login);
     

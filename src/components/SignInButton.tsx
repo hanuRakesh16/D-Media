@@ -1,23 +1,49 @@
-import { useAddress, useNetworkMismatch, useNetwork, ConnectWallet, ChainId } from '@thirdweb-dev/react';
-import React from 'react';
+import {
+  useAddress,
+  useNetworkMismatch,
+  useNetwork,
+  ConnectWallet,
+  ChainId,
+} from "@thirdweb-dev/react";
+import React from "react";
+import useLensUser from "../graphql/lib/auth/useLensUser";
+import useLogin from "../graphql/lib/auth/userLogin";
 
-type Props = {}
+type Props = {};
 
-const SignInButton = (props: Props) => {
-    const address = useAddress();   // Detct connection address
-    const isOnWrongNetwork = useNetworkMismatch();  // detect if network mismatch
-    const [, switchNetwork] = useNetwork();     // switch network
+export default function SignInButton({}: Props) {
+  const address = useAddress(); // Detct connection address
+  const isOnWrongNetwork = useNetworkMismatch(); // detect if network mismatch
+  const [, switchNetwork] = useNetwork(); // switch network
+  const { isSignedInQuery, profileQuery } = useLensUser();
+  const { mutate: requestLogin } = useLogin();
 
-    // 1. user needs to connect to wallet
-    if(!address) {
-        return <ConnectWallet />;
-    }
-    // 2. Switch Network
-    if(isOnWrongNetwork) {
-        return (
-            <button onClick={() => switchNetwork?.(ChainId.Polygon)}>
-                Switch Network
-            </button>
-        );
-    }
+  // 1. user needs to connect to wallet
+  if (!address) {
+    return <ConnectWallet />;
+  }
+  // 2. Switch Network
+  if (isOnWrongNetwork) {
+    return (
+      <button onClick={() => switchNetwork?.(ChainId.Polygon)}>
+        Switch Network
+      </button>
+    );
+  }
+  if (isSignedInQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!isSignedInQuery.data) {
+    return <button onClick={() => requestLogin()}>Sign In with Lens</button>;
+  }
+  if (profileQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!profileQuery.data?.defaultProfile) {
+    return <div>No Lens Profile.</div>;
+  }
+  if (profileQuery.data?.defaultProfile) {
+    return <div>Hello, {profileQuery.data?.defaultProfile?.handle}</div>;
+  }
+  return <div>Something went Wrong.</div>;
 }
