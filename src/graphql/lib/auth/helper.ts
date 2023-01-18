@@ -1,12 +1,12 @@
 const STORAGE_KEY = "LH_STORAGE_KEY";
 
 export function isTokenExpired(exp: number) {
-    if(!exp) return false;
+    if(!exp) return true;
 
     if(Date.now() >= exp * 1000) {
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 // reading access tolen from storage
 export function readAccessToken(){

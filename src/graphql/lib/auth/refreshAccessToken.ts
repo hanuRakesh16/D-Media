@@ -16,7 +16,8 @@ export default async function refreshAccessToken() {
         }
     )();
 
-    const { refreshToken: newRefreshToken, accessToken } = result.refresh
+    const { refreshToken: newRefreshToken, accessToken } = result.refresh;
+    
     setAccessToken(accessToken, newRefreshToken);
 
     return accessToken as string;
