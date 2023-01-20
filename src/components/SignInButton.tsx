@@ -4,6 +4,7 @@ import {
   useNetwork,
   ConnectWallet,
   ChainId,
+  MediaRenderer,
 } from "@thirdweb-dev/react";
 import React from "react";
 import useLensUser from "../graphql/lib/auth/useLensUser";
@@ -42,8 +43,22 @@ export default function SignInButton({}: Props) {
   if (!profileQuery.data?.defaultProfile) {
     return <div>No Lens Profile.</div>;
   }
+  // If it's done loading and there's a default profile
   if (profileQuery.data?.defaultProfile) {
-    return <div>Hello, {profileQuery.data?.defaultProfile?.handle}</div>;
+    return (
+      <div>
+        <MediaRenderer
+          // @ts-ignore
+          src={profileQuery?.data?.defaultProfile?.picture?.original?.url || ""}
+          alt={profileQuery.data.defaultProfile.name || ""}
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: "50%",
+          }}
+        />
+      </div>
+    );
   }
   return <div>Something went Wrong.</div>;
 }
